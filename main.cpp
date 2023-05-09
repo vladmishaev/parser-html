@@ -1,4 +1,3 @@
-#include <iterator>
 #include <map>
 #include <iostream>
 #include <list>
@@ -32,7 +31,14 @@ class HtmlDocument
         map<string, HtmlElement*> listHtmlElements;
         stack<HtmlElement*> nestingLevel;
         string HTMLcode;
+        
+        string deleteSpaceByEqual(string strHtml)
+        {
+            string editedStrHtml = "";
+            regex getEqualWSpace(R"((\s+=\s+)|(\s+=)|(=\s+))");
 
+            return editedStrHtml;
+        }
 
         string getNameTeg(string teg)
         {
@@ -44,40 +50,32 @@ class HtmlDocument
             return nameObj;
         }
 
+
+
         map<string, string> getAtributesList(string teg)
         {
             map<string, string> AtrList;
             
-            regex reg("[a-z-]+\\s*=\\s*\"[a-zA-Z0-9-_]+\"");
+            regex reg(R"([a-z0-9-]+="[a-zA-Z0-9-_]+")");
             smatch match;
 
             while(regex_search(teg, match, reg))
             {
-                string attributeWValue = match[0].str();
-                
-                regex patternDivide("\\s*=\\s*");
-                sregex_token_iterator begin(attributeWValue.begin(),attributeWValue.end(), 
-                                            patternDivide,-1);
-                sregex_token_iterator end;
+                string atrWValue = match[0].str();
+                regex patDivide("=");
 
-                
+                vector<string> dividedString(
+                        sregex_token_iterator(atrWValue.begin(), atrWValue.end(), patDivide,-1),
+                        sregex_token_iterator()
+                        );
 
+                string attribute = dividedString[0];
+                string value = dividedString[1];
 
-
-
+                AtrList[attribute] = value;
+                teg = match.suffix();
 
             }
-            
-            
-            
-
-
-
-
-
-
-
-
 
             return AtrList;
 
@@ -108,8 +106,10 @@ class HtmlDocument
                     {
                         nestingLevel.top()->children[name] = &teg;
                     }
+                    
+                    teg.attributes = getAtributesList(*str);
 
-
+                    nestingLevel.push(&teg);
                                     
                 }
             }
@@ -158,14 +158,14 @@ class HtmlDocument
 int main()
 {
 
-    string HtmlCode = "<tag1 value = \"value\">  fdfdfdsfsdfsd   dsfsdf"
-                      " fsdfdsfdsfsdfsd   <tag2 name = \"name\">    fsdfsdfsdfsdsd  "
-                      "<tag3 another=\"another\" final=\"final\">"
+    string HtmlCode = "<tag1 value=\"value\">"
+                      "<tag2 name=\"vlad\">"
+                      "<tag3 another=\"1\" final=\"56\">"
                       "</tag3>"
                       "</tag2>"
                       "</tag1>";
 
-    
+    HtmlDocument tes(HtmlCode);
 
     return 0;
 }

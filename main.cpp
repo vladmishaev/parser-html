@@ -10,6 +10,7 @@ using namespace std;
 
 struct HtmlElement
 {
+    string name;
     map<string, string> attributes;
     map<string, HtmlElement*> children;
 };
@@ -23,7 +24,11 @@ class HtmlDocument
             HTMLcode = strHTML;
             CreateHtmlDocument();
         }
-
+        
+        void show()
+        {
+            cout << listHtmlElements["tag1"]->children["tag2"]->attributes["name"] << endl;
+        }
 
 
 
@@ -94,22 +99,23 @@ class HtmlDocument
                 {
 
                     string name = getNameTeg(*str);             
-                    HtmlElement teg;
+                    HtmlElement *teg = new HtmlElement();
+                    teg->name = name;
 
-    
+                        
                     if(nestingLevel.empty())
                     {
-                        listHtmlElements[name] = &teg;
+                        listHtmlElements[name] = teg;
 
                     }
                     else
                     {
-                        nestingLevel.top()->children[name] = &teg;
+                       nestingLevel.top()->children[name] = teg;
                     }
                     
-                    teg.attributes = getAtributesList(*str);
+                    teg->attributes = getAtributesList(*str);
 
-                    nestingLevel.push(&teg);
+                    nestingLevel.push(teg);
                                     
                 }
             }
@@ -166,6 +172,6 @@ int main()
                       "</tag1>";
 
     HtmlDocument tes(HtmlCode);
-
+    tes.show();
     return 0;
 }

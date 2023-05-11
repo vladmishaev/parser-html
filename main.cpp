@@ -21,13 +21,59 @@ class HtmlDocument
 
         HtmlDocument(string strHTML)
         {
-            HTMLcode = strHTML;
+            HTMLcode = deleteSpaceByEqual(strHTML);
             CreateHtmlDocument();
         }
         
-        void show()
+        string getValue(string strQuery)
         {
-            cout << listHtmlElements["tag1"]->children["tag2"]->attributes["name"] << endl;
+
+            vector<string> listQueries;
+
+            for(int simbol = 0; simbol < strQuery.size(); simbol++)
+            {
+                string query;
+             
+                while(simbol < strQuery.size())
+                {
+                    if(strQuery[simbol] == '.' || strQuery[simbol] == '~')
+                    {
+                        break;
+                    }
+
+                    query += strQuery[simbol];
+                    simbol++;
+                }
+
+                listQueries.push_back(query);
+
+            }
+
+            string value;
+            HtmlElement *currentEl = nullptr;
+            
+            for(string query : listQueries)
+            {
+
+                if(query == listQueries.back())
+                {
+                    value =  currentEl->attributes[query];
+                }
+                else 
+                {
+                    if(currentEl == nullptr)
+                    {
+                         currentEl = listHtmlElements[query];
+                    }
+                    else
+                    {
+                        currentEl = currentEl->children[query];
+                    }
+                }
+                
+            }
+
+            return value;
         }
 
 
@@ -41,6 +87,8 @@ class HtmlDocument
         {
             string editedStrHtml = "";
             regex getEqualWSpace(R"((\s+=\s+)|(\s+=)|(=\s+))");
+            editedStrHtml = regex_replace(strHtml, getEqualWSpace, "=" );
+
 
             return editedStrHtml;
         }
@@ -76,7 +124,7 @@ class HtmlDocument
 
                 string attribute = dividedString[0];
                 string value = dividedString[1];
-
+                
                 AtrList[attribute] = value;
                 teg = match.suffix();
 
@@ -165,13 +213,19 @@ int main()
 {
 
     string HtmlCode = "<tag1 value=\"value\">"
-                      "<tag2 name=\"vlad\">"
-                      "<tag3 another=\"1\" final=\"56\">"
+                      "<div class= \"nav-menu\">"
+                      "<p class =\"artical\" >"
+                      "</p>"
+                      "</div>"
+                      "<tag2 name  = \"vlad\">"
+                      "<tag3 another = \"1\" final=\"56\">"
                       "</tag3>"
                       "</tag2>"
                       "</tag1>";
 
+    string query = "tag1.tag2~name";
+
     HtmlDocument tes(HtmlCode);
-    tes.show();
+    cout << tes.getValue(query) << endl;
     return 0;
 }
